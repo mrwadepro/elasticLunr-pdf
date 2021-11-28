@@ -17,6 +17,7 @@ import { createPromiseCapability } from "pdfjs-lib";
 import { getCharacterType } from "./pdf_find_utils.js";
 import { scrollIntoView } from "./ui_utils.js";
 
+import elasticlunr from "../src/core/elasticlunr.js/elasticlunr.js-master/lib/index.js";
 const FindState = {
   FOUND: 0,
   NOT_FOUND: 1,
@@ -412,6 +413,19 @@ class PDFFindController {
     const queryLen = query.length;
 
     let matchIdx = -queryLen;
+
+    const parse = { title: "pdf", body: pageContent, id: 1 };
+
+    var index = elasticlunr(function () {
+      this.addField("title");
+      this.addField("body");
+      this.setRef("id");
+    });
+    console.log(elasticlunr);
+    index.addDoc(parse);
+    console.log(query);
+    index.search(query);
+
     while (true) {
       matchIdx = pageContent.indexOf(query, matchIdx + queryLen);
       if (matchIdx === -1) {
